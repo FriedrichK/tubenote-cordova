@@ -1,0 +1,9 @@
+# Linux
+*~
+
+# Grunt
+node_modules/
+
+# Sublime Text
+tubenote-cordova.sublime-project
+tubenote-cordova.sublime-workspace
