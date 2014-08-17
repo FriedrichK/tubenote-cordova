@@ -5,8 +5,8 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     concat: {
       shared: {
-        src: ['www/dev_js/messageboard/**/*.js'],
-        dest: 'www/js/messageboard.js'
+        src: ['www/dev_js/shared/**/*.js'],
+        dest: 'www/js/shared.js'
       },
       home: {
         src: ['www/dev_js/home/**/*.js'],
@@ -15,8 +15,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       shared: {
-        src: 'www/js/messageboard.js',
-        dest: 'www/js/messageboard.min.js'
+        src: 'www/js/shared.js',
+        dest: 'www/js/shared.min.js'
       },
       home: {
         src: 'www/js/home.js',
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
         boss: true,
         eqnull: true,
         node: true,
-        ignores: ['www/dev_js/_libraries/*']
+        ignores: ['www/dev_js/_libraries/**/*']
       }
     },
     clean: ['www/js', 'www/css', 'www/dev_css'],
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 
         },
         files: {
-          'www/dev_css/messageboard.css': 'www/dev_scss/messageboard/messageboard.scss',
+          'www/dev_css/shared.css': 'www/dev_scss/shared/shared.scss',
           'www/dev_css/home.css': 'www/dev_scss/home/home.scss'
         }
       }
@@ -55,26 +55,37 @@ module.exports = function(grunt) {
     cssmin: {
       minify: {
         files: {
-          'www/css/messageboard.css': 'www/dev_css/messageboard.css',
+          'www/css/shared.css': 'www/dev_css/shared.css',
           'www/css/home.css': 'www/dev_css/home.css'
         }
       }
     },
-    copy: {
-      libraries: {
-        files: [
-          {expand: true, cwd: 'www/dev_js/_libraries/', src: ['**/*'], dest: 'www/js/'},
-          {expand: true, cwd: 'www/dev_scss/_libraries/', src: ['**/*.css'], dest: 'www/css/'},
-        ]
-      }
-    },
     watch: {
       scripts: {
-        files: ['www/dev_js/**/*.js', 'www/dev_scss/**/*.scss'],
-        tasks: ['jshint', 'clean', 'sass', 'cssmin', 'concat', 'uglify', 'copy'],
+        files: ['www/dev_js/**/*.js', 'www/dev_scss/**/*.scss', 'www/dev_html/**/*.html'],
+        tasks: ['htmlbuild', 'wiredep', 'jshint', 'clean', 'sass', 'cssmin', 'concat', 'uglify', 'copy'],
         options: {
           spawn: false,
         },
+      }
+    },
+    htmlbuild: {
+      main: {
+        src: 'www/dev_html/index.html',
+        dest: 'www/',
+        options: {
+          beautify: true,
+          sections: {
+            test: 'www/dev_html/test/**/*.html'
+          }
+        }
+      }
+    },
+    wiredep: {
+      main: {
+        src: [
+          'www/index.html'
+        ]
       }
     }
   });
@@ -88,8 +99,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-html-build');
+  grunt.loadNpmTasks('grunt-wiredep');
   grunt.registerTask('default', 'runs my tasks', function() {
-    var tasks = ['jshint', 'clean', 'sass', 'cssmin', 'concat', 'uglify', 'copy'];
+    var tasks = ['htmlbuild', 'wiredep', 'jshint', 'clean', 'sass', 'cssmin', 'concat', 'uglify'];
     grunt.option('force', true);
     grunt.task.run(tasks);
   });
